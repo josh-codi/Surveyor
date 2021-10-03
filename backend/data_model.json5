@@ -1,0 +1,50 @@
+// This document is used as a white board for brainstorming the data model
+// NB: It is thus not necessarily anexact replica of the implemented data model
+
+{
+  entities: {
+    user: {
+      attributes: {
+        id: "integer", // PRIMARY KEY
+        name: "string",
+        email: "string",
+        passwordhash: "string",
+      },
+    },
+    survey: {
+      attributes: {
+        id: "integer", // PRIMARY KEY
+        admin_id: "integer",
+        name: "string",
+        created_at: "timestamp",
+        updated_at: "timestamp",
+        // fields: "Array<survey_field>"
+      },
+    },
+    survey_field: {
+      attributes: {
+        id: "integer", // PRIMARY KEY
+        survey_id: "integer",
+        label: "string",
+        input_type: "text | number | single-select",
+        options: "string", // as a json string
+        // postion: "integer",
+      },
+    },
+    survey_submission: {
+      attributes: {
+        id: "integer",
+        survey_id: "integer",
+        created_at: "timestamp",
+        // survey_fields_answers: "Array<SP_fields_answers>"
+      },
+    },
+    survey_field_answer: {
+      attributes: {
+        survey_submission_id: "integer",
+        survey_field_id: "integer",
+        answer: "string",
+      },
+    },
+  },
+}
