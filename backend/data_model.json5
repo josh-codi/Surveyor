@@ -28,7 +28,7 @@
         label: "string",
         input_type: "text | number | single-select",
         options: "string", // as a json string
-        // postion: "integer",
+        postion: "integer",
       },
     },
     survey_submission: {

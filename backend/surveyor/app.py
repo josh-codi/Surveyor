@@ -4,6 +4,7 @@ from flask import Flask, json
 from flask_jwt_extended import JWTManager
 from werkzeug.exceptions import HTTPException
 import auth
+import survey
 from database import init_app
 import dataclasses
 
@@ -46,3 +47,4 @@ init_app(app)
 
 # register views
 auth.init_app(app)
+survey.init_app(app)
