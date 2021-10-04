@@ -55,3 +55,19 @@ END;
 --
 --
 --
+CREATE TABLE IF NOT EXISTS survey_submission (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    survey_id INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (survey_id) REFERENCES survey(id)
+);
+--
+--
+--
+CREATE TABLE IF NOT EXISTS survey_submission_answer(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    survey_submission_id INTEGER NOT NULL,
+    survey_field_id INTEGER NOT NULL,
+    answer TEXT NOT NULL,
+    FOREIGN KEY (survey_submission_id) REFERENCES survey_submission(id)
+);
