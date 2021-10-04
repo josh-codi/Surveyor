@@ -32,7 +32,8 @@ class SurveyView(FlaskView):
     @route('/<string:survey_id>', methods=['GET'])
     def get_one(self,  survey_id: int):
         admin = get_current_user()
-        survey = self.service.get_survey_by_id(get_db(), admin.id, survey_id)
+        survey = self.service.get_survey_by_id(
+            get_db(), admin_id=admin.id, survey_id=survey_id)
         if not survey:
             abort(404)
         return jsonify(survey), 200

@@ -21,7 +21,7 @@ class Survey(object):
     created_at: datetime
     updated_at: datetime
     # admin: Optional[User] = None  # will be None, if not loaded from db yet
-    fields: Optional[List["SurveyField"]] = None
+    fields: List["SurveyField"] = tuple()
 
 
 @dataclass
@@ -41,6 +41,7 @@ class SurveyFieldOptions(object):
     min: Union[int, str, None] = None
     max: Union[int, str, None] = None
     values: Union[List[str], None] = None
+    required: bool = True
 
 
 SURVEY_FIELD_TYPE_TEXT = 'text'
@@ -111,7 +112,8 @@ class SurveyService(object):
         SurveyService._insert_survey_fields_into_db(
             db, survey_id, data['fields'])
 
-        survey = SurveyService.get_survey_by_id(db, admin_id, survey_id)
+        survey = SurveyService.get_survey_by_id(
+            db, survey_id=survey_id,  admin_id=admin_id)
         return survey
 
     @staticmethod
@@ -134,15 +136,16 @@ class SurveyService(object):
         )
 
     @staticmethod
-    def get_survey_by_id(db: Connection, admin_id: int, survey_id: int):
-        data = SurveyService.get_surveys(db, admin_id, survey_id)
+    def get_survey_by_id(db: Connection, survey_id: int, admin_id: Union[int, None] = None):
+        data = SurveyService.get_surveys(
+            db, admin_id=admin_id, survey_id=survey_id)
         try:
             return data[0]
         except IndexError:
             return None
 
     @staticmethod
-    def get_surveys(db: Connection, admin_id: int, survey_id: Optional[int] = None):
+    def get_surveys(db: Connection, admin_id: Optional[int] = None, survey_id: Optional[int] = None):
         query_string = '''
             SELECT  *,
             
@@ -154,9 +157,11 @@ class SurveyService(object):
             survey_field.updated_at AS survey_field_updated_at
 
             FROM survey JOIN survey_field ON survey.id=survey_field.survey_id
-            WHERE survey.admin_id=:admin_id
+            WHERE TRUE
         '''
-        if survey_id:
+        if admin_id is not None:
+            query_string += ' AND survey.admin_id=:admin_id'
+        if survey_id is not None:
             query_string += ' AND survey.id=:survey_id'
         query_string += ' ORDER BY survey.updated_at DESC, survey_field.position ASC'
 
@@ -171,7 +176,6 @@ class SurveyService(object):
             if _id not in surveys:
                 surveys[_id] = \
                     SurveyService._parse_survey_db_result_to_dataclass(row)
-                surveys[_id].fields = []
 
             surveys[_id].fields.append(
                 SurveyService._parse_survey_field_db_result_to_dataclass(row)
@@ -184,7 +188,7 @@ class SurveyService(object):
         '''
         TODO: Implement adding/removing/repositioning of survey fields
         '''
-        if SurveyService.get_survey_by_id(db, admin_id, survey_id) is None:
+        if SurveyService.get_survey_by_id(db, survey_id=survey_id, admin_id=admin_id) is None:
             return None
 
         db.execute(
@@ -208,7 +212,8 @@ class SurveyService(object):
             ]
         )
 
-        survey = SurveyService.get_survey_by_id(db, admin_id, survey_id)
+        survey = SurveyService.get_survey_by_id(
+            db, survey_id=survey_id, admin_id=admin_id)
         return survey
 
     # @staticmethod
@@ -242,4 +247,5 @@ class SurveyService(object):
             'id': row['survey_id'],
             'created_at': row['survey_created_at'],
             'updated_at': row['survey_updated_at'],
+            'fields': []
         })
