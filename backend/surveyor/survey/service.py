@@ -8,7 +8,6 @@ import json
 
 from werkzeug.exceptions import HTTPException
 
-from auth.service import User
 from dataclasses import dataclass
 import dataclasses
 
@@ -98,8 +97,8 @@ def _validate_metadata_of_input_type(data: dict):
 
 
 class SurveyService(object):
-    @staticmethod
-    def create_survey(db: Connection, admin_id: str, data: dict):
+    @classmethod
+    def create_survey(cls, db: Connection, admin_id: str, data: dict):
         try:
             survey_id: int = db.execute(
                 'INSERT INTO survey (name, admin_id) VALUES (?, ?)',
@@ -116,8 +115,8 @@ class SurveyService(object):
             db, survey_id=survey_id,  admin_id=admin_id)
         return survey
 
-    @staticmethod
-    def _insert_survey_fields_into_db(db: Connection, survey_id: int, fields: List[dict]):
+    @classmethod
+    def _insert_survey_fields_into_db(cls, db: Connection, survey_id: int, fields: List[dict]):
         db.executemany(
             '''
                 INSERT INTO survey_field (survey_id, label, input_type, options, position)
@@ -135,8 +134,8 @@ class SurveyService(object):
             ]
         )
 
-    @staticmethod
-    def get_survey_by_id(db: Connection, survey_id: int, admin_id: Union[int, None] = None):
+    @classmethod
+    def get_survey_by_id(cls, db: Connection, survey_id: int, admin_id: Union[int, None] = None):
         data = SurveyService.get_surveys(
             db, admin_id=admin_id, survey_id=survey_id)
         try:
@@ -144,8 +143,8 @@ class SurveyService(object):
         except IndexError:
             return None
 
-    @staticmethod
-    def get_surveys(db: Connection, admin_id: Optional[int] = None, survey_id: Optional[int] = None):
+    @classmethod
+    def get_surveys(cls, db: Connection, admin_id: Optional[int] = None, survey_id: Optional[int] = None):
         query_string = '''
             SELECT  *,
             
@@ -183,8 +182,8 @@ class SurveyService(object):
 
         return tuple(surveys.values())
 
-    @staticmethod
-    def update_survey(db: Connection, admin_id: int, survey_id: int, data: dict):
+    @classmethod
+    def update_survey(cls, db: Connection, admin_id: int, survey_id: int, data: dict):
         '''
         TODO: Implement adding/removing/repositioning of survey fields
         '''
@@ -226,8 +225,8 @@ class SurveyService(object):
     #         error.code = 400
     #         raise error
 
-    @staticmethod
-    def _parse_survey_field_db_result_to_dataclass(row: dict) -> SurveyField:
+    @classmethod
+    def _parse_survey_field_db_result_to_dataclass(cls, row: dict) -> SurveyField:
         allowed_fields = set(f.name for f in dataclasses.fields(SurveyField))
         return SurveyField(**{
             **{k: row[k] for k in row.keys() if k in allowed_fields},
@@ -238,8 +237,8 @@ class SurveyService(object):
             'updated_at': row['survey_field_updated_at'],
         })
 
-    @staticmethod
-    def _parse_survey_db_result_to_dataclass(row: dict) -> Survey:
+    @classmethod
+    def _parse_survey_db_result_to_dataclass(cls, row: dict) -> Survey:
         allowed_fields = set(f.name for f in dataclasses.fields(Survey))
         return Survey(**{
             **{k: row[k] for k in row.keys() if k in allowed_fields},

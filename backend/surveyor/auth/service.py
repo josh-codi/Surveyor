@@ -29,8 +29,8 @@ class AuthService(object):
                 db, username='master', hide_password=True)
         return root_user
 
-    @staticmethod
-    def register_user(db: Connection, username: str, password: str, name: str) -> User:
+    @classmethod
+    def register_user(cls, db: Connection, username: str, password: str, name: str) -> User:
         password_hash = generate_password_hash(password)
         user_id: int = db.execute(
             'INSERT INTO user (username, password, name) VALUES (?, ?, ?)',
@@ -38,8 +38,8 @@ class AuthService(object):
         ).lastrowid
         return AuthService.get_user_by_id(db, user_id)
 
-    @staticmethod
-    def verify_user(db: Connection, username: str, password: str) -> Tuple[bool, Union[User, None]]:
+    @classmethod
+    def verify_user(cls, db: Connection, username: str, password: str) -> Tuple[bool, Union[User, None]]:
         user = AuthService._get_user_by_username(
             db, username, hide_password=False)
         if user is None:
@@ -65,8 +65,8 @@ class AuthService(object):
             'password': '<redacted-for-security-reasons>' if hide_password else user_data['password']
         })
 
-    @staticmethod
-    def get_user_by_id(db: Connection, user_id: int):
+    @classmethod
+    def get_user_by_id(cls, db: Connection, user_id: int):
         user_data = db.execute(
             '''
             SELECT id, name, username, created_at, updated_at
@@ -78,5 +78,6 @@ class AuthService(object):
             return None
         return User(**user_data)
 
-    def get_access_token_for_user(self, user: User) -> str:
+    @classmethod
+    def get_access_token_for_user(cls, user: User) -> str:
         return create_access_token(identity=user, expires_delta=timedelta(days=1))

@@ -2,7 +2,7 @@ import dataclasses
 from dataclasses import dataclass
 from datetime import datetime
 from sqlite3.dbapi2 import Connection
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Dict, List, Optional, Sequence, Union
 
 from survey.service import SurveyField, SurveyService
 from werkzeug.exceptions import HTTPException
@@ -79,12 +79,12 @@ class SurveySubmissionService(object):
             )
         return tuple(submissions.values())
 
-    @staticmethod
-    def get_survey_submissions_summary(db: Connection, survey_id: int):
+    @classmethod
+    def get_survey_submissions_summary(cls, db: Connection, survey_id: int):
         pass
 
-    @staticmethod
-    def submit_answers_for_survey(db: Connection, survey_id: int, data: Dict[str, str]):
+    @classmethod
+    def submit_answers_for_survey(cls, db: Connection, survey_id: int, data: Dict[str, str]):
         survey = SurveyService().get_survey_by_id(db, survey_id=survey_id)
         if survey is None:
             error = HTTPException('survey not found')
@@ -114,8 +114,8 @@ class SurveySubmissionService(object):
             ]
         )
 
-    @staticmethod
-    def _validate_answer_for_field(field: SurveyField, answer: str):
+    @classmethod
+    def _validate_answer_for_field(cls, field: SurveyField, answer: str):
         error = None
         if field.options.required and (answer is None or answer.strip() == ''):
             error = HTTPException(f'Field {field.label} is required')
@@ -143,8 +143,8 @@ class SurveySubmissionService(object):
             error.code = 400
             raise error
 
-    @staticmethod
-    def _parse_survey_submission_db_row_to_dataclass(row: dict) -> SurveySubmission:
+    @classmethod
+    def _parse_survey_submission_db_row_to_dataclass(cls, row: dict) -> SurveySubmission:
         allowed_fields = set(f.name for f in dataclasses.fields(SurveyField))
         return SurveySubmission(**{
             **{k: row[k] for k in row.keys() if k in allowed_fields},
@@ -152,8 +152,8 @@ class SurveySubmissionService(object):
             'answers': [],
         })
 
-    @staticmethod
-    def _parse_survey_submission_answer_db_row_to_dataclass(row: dict) -> SurveySubmissionAnswer:
+    @classmethod
+    def _parse_survey_submission_answer_db_row_to_dataclass(cls, row: dict) -> SurveySubmissionAnswer:
         allowed_fields = set(
             f.name for f in dataclasses.fields(SurveySubmissionAnswer))
         return SurveySubmissionAnswer(**{
