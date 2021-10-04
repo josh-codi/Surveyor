@@ -67,6 +67,17 @@ From a terminal, run:
     pip install -r ./requirements.txt   # install dependencies
     ```
 
+#### Run in development
+
+    ```sh
+    # in an activated virtualenv dir, with all dependencies installed
+    python surveyor/app.py 
+    ```
+
+#### Production deployment
+
+See recommendations at <https://www.toptal.com/flask/flask-production-recipes>
+
 #### Project Structure
 
 Partly based on <https://github.com/pallets/flask/tree/main/examples/tutorial>
