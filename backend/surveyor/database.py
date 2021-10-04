@@ -1,6 +1,5 @@
 import sqlite3
-from sqlite3.dbapi2 import Connection
-from typing import final
+from sqlite3.dbapi2 import Connection, Cursor
 from flask import g, Flask
 import os
 import functools
@@ -16,10 +15,18 @@ def autocommit_db_changes(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         db = get_db()
+        db.rollback()
         response = view(**kwargs)
         db.commit()
         return response
     return wrapped_view
+
+
+def _dict_factory(cursor: Cursor, row: tuple):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
 
 
 def get_db() -> Connection:
@@ -27,7 +34,7 @@ def get_db() -> Connection:
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
         logging.info('Opened database connection')
-        db.row_factory = sqlite3.Row
+        db.row_factory = _dict_factory  # rows will be represented as regular python dicts
     return db
 
 
