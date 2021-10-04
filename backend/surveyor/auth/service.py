@@ -1,4 +1,5 @@
 import dataclasses
+from datetime import timedelta
 from sqlite3.dbapi2 import Connection, IntegrityError, Row
 from typing import Optional, Tuple, Union
 from werkzeug.exceptions import HTTPException
@@ -40,7 +41,7 @@ class AuthService(object):
         return True, User(**{k: user_data[k] for k in user_data.keys() if k in allowed_fields})
 
     @staticmethod
-    def get_user_by_id(db: Connection, user_id: str):
+    def get_user_by_id(db: Connection, user_id: int):
         user_data = db.execute(
             f'SELECT id, name, username FROM user WHERE id=? LIMIT 1', (
                 user_id,)
@@ -50,4 +51,4 @@ class AuthService(object):
         return User(**user_data)
 
     def get_access_token_for_user(self, user: User) -> str:
-        return create_access_token(identity=user)
+        return create_access_token(identity=user, expires_delta=timedelta(days=1))
