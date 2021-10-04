@@ -1,12 +1,10 @@
-import dataclasses
-from datetime import timedelta
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 from sqlite3.dbapi2 import Connection, IntegrityError, Row
 from typing import Optional, Tuple, Union
-from werkzeug.exceptions import HTTPException
-from werkzeug.security import check_password_hash
-from werkzeug.security import generate_password_hash
+
 from flask_jwt_extended import create_access_token
-from dataclasses import dataclass
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 @dataclass
@@ -14,9 +12,22 @@ class User:
     id: int
     name: str
     username: str
+    created_at: datetime
+    updated_at: datetime
+    password: str = '<redacted-for-security-reasons>'
 
 
 class AuthService(object):
+
+    @classmethod
+    def create_root_user_if_not_exists(cls, db: Connection) -> User:
+        try:
+            root_user = cls.register_user(
+                db, username='master', password='keypass', name='Attaa Adwoa')
+        except IntegrityError:
+            root_user = cls._get_user_by_username(
+                db, username='master', hide_password=True)
+        return root_user
 
     @staticmethod
     def register_user(db: Connection, username: str, password: str, name: str) -> User:
@@ -25,26 +36,43 @@ class AuthService(object):
             'INSERT INTO user (username, password, name) VALUES (?, ?, ?)',
             (username, password_hash, name)
         ).lastrowid
-        return User(id=user_id, username=username, name=name)
+        return AuthService.get_user_by_id(db, user_id)
 
     @staticmethod
     def verify_user(db: Connection, username: str, password: str) -> Tuple[bool, Union[User, None]]:
+        user = AuthService._get_user_by_username(
+            db, username, hide_password=False)
+        if user is None:
+            return False, None
+        if not check_password_hash(user.password, password):
+            return False, None
+
+        # hide password now - we're done using it
+        user.password = '<redacted-for-security-reasons>'
+        return True, user
+
+    @classmethod
+    def _get_user_by_username(cls, db: Connection, username: str, hide_password=True) -> Optional[User]:
         user_data: Union[Row, None] = db.execute(
             'SELECT * FROM user WHERE username=? LIMIT 1',
             (username,)
         ).fetchone()
         if user_data is None:
-            return False, None
-        if not check_password_hash(user_data['password'], password):
-            return False, None
-        allowed_fields = set(f.name for f in dataclasses.fields(User))
-        return True, User(**{k: user_data[k] for k in user_data.keys() if k in allowed_fields})
+            return None
+
+        return User(**{
+            **user_data,
+            'password': '<redacted-for-security-reasons>' if hide_password else user_data['password']
+        })
 
     @staticmethod
     def get_user_by_id(db: Connection, user_id: int):
         user_data = db.execute(
-            f'SELECT id, name, username FROM user WHERE id=? LIMIT 1', (
-                user_id,)
+            '''
+            SELECT id, name, username, created_at, updated_at
+            FROM user WHERE id=? LIMIT 1
+            ''',
+            (user_id,)
         ).fetchone()
         if user_data is None:
             return None

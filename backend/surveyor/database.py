@@ -6,6 +6,8 @@ import functools
 import logging
 import traceback
 
+from auth.service import AuthService
+
 
 DATABASE = f'{os.path.dirname(os.path.abspath(__file__))}/surveyor_db.sqlite'
 
@@ -32,8 +34,8 @@ def _dict_factory(cursor: Cursor, row: tuple):
 def get_db() -> Connection:
     db = getattr(g, '_database', None)
     if db is None:
+        # open a connection to the database
         db = g._database = sqlite3.connect(DATABASE)
-        logging.info('Opened database connection')
         db.row_factory = _dict_factory  # rows will be represented as regular python dicts
     return db
 
@@ -52,6 +54,7 @@ def _init_db(app: Flask):
         try:
             with app.open_resource('schema.sql', mode='r') as f:
                 db.cursor().executescript(f.read())
+            AuthService.create_root_user_if_not_exists(db)
             db.commit()
         except Exception as error:
             logging.error('Failed to initialise database')
