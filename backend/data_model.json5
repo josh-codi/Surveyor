@@ -39,7 +39,7 @@
         // survey_fields_answers: "Array<SP_fields_answers>"
       },
     },
-    survey_field_answer: {
+    survey_submission_answer: {
       attributes: {
         survey_submission_id: "integer",
         survey_field_id: "integer",
