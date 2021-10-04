@@ -39,10 +39,11 @@ def get_db() -> Connection:
 
 
 def _close_database_connection(exception=None):
+    # existing database connection if any, else None
     db = getattr(g, '_database', None)
     if db is not None:
-        logging.info('Closed database connection')
         db.close()
+    setattr(g, '_database', None)  # remove connection object from memory
 
 
 def _init_db(app: Flask):
