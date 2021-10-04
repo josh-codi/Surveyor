@@ -81,3 +81,8 @@ See recommendations at <https://www.toptal.com/flask/flask-production-recipes>
 #### Project Structure
 
 Partly based on <https://github.com/pallets/flask/tree/main/examples/tutorial>
+
+## TODO
+
+- Implement change of password
+- Automated testing
