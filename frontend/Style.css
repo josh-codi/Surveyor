@@ -1,0 +1,166 @@
+/* width */
+::-webkit-scrollbar {
+    width: 0px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: rgba(30, 71, 161, 0.678);
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+body{
+    width: 100% !important;
+    height: 100vh !important;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background:linear-gradient(to bottom,#9c9c9cb3,#ffffffb3);
+}
+html *{
+    text-align: center;
+}
+.container{
+    background:rgba(248, 248, 255, 0.507);
+    box-shadow: 0px 0px 8px gray;
+    width: 60%;
+    border:2px solid rgb(221, 222, 255);
+    height: 55vh;
+    padding:2%;
+    border-radius: 20px;
+    overflow-y: scroll;
+}
+
+/* Surveys ========================= */
+.Survey{
+    margin:auto;
+    border:none;
+    padding:2% 1% 2% 1%;
+    box-shadow: 0px 0px 6px #eee;
+    width: 80%;
+    position: relative;
+    margin:3vh auto;
+    border-radius: 5px;
+    background:rgba(118, 219, 172, 0.336);
+}
+.Survey .open{
+    position: absolute;
+    right: 5%;
+    top:35%;
+    border-radius: 5px;
+    padding: 1% 2% 1% 2%;
+    border:none;
+    background:rgba(149, 0, 255, 0.404);
+    font-weight: 500;
+    color:#010b49;
+}
+
+/* Fields ================== */
+.fields{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: 70%;
+    padding:1%;
+    border-radius: 0px;
+    border:0.5px solid rgba(0, 0, 0, 0.151);
+    align-items: center;
+    margin:3% auto;
+    background-color: #d173c524;
+}
+.fields *{
+    width: 80%;
+}
+#fields-container{
+    border:1px solid indigo;
+    box-shadow: 0px 0px 6px rgba(76, 0, 130, 0.61);
+    height: 30vh !important;
+    width: 80%;
+    margin: auto !important;
+    overflow-y: scroll;
+    border-radius: 10px;
+}
+
+
+.hide-fields{
+    display: none;
+}
+.show-fields{
+    display: block;
+}
+
+
+
+
+#content{
+}
+
+
+
+
+/* Landing page ================================= */
+.adm-btn-container{
+    margin:auto;
+    display: flex;
+    width: 80%;
+    justify-content: space-evenly;
+}
+.admin-login input{
+    padding:1.5%;
+    border-radius:5px;
+    border:none;
+    outline: none;
+    background-color: #0000ff3a;
+}
+
+.landing-page button , .go-back, .logout{
+    padding:2%;
+    border-radius: 5px;
+    /* border:0.4px solid rgb(45, 0, 59); */
+    border:none;
+    outline:none;
+    background-color: #7381d1;
+    font-weight: 600;
+    color:rgb(1, 0, 70);
+}
+
+
+/* Admin page ====================== */
+.admin-container{
+    display: flex;
+    border:1px solid #726ad8;
+    width: 70%;
+    margin:auto;
+    border-radius: 3px;
+    box-shadow: 0px 0px 6px #716ad89c;
+}
+.create-btn , .submissions-btn{
+    width:120px;
+    height: 40px;
+    margin:20px auto;
+    border-radius: 5px;
+    border:none;
+    background:#716ad8c7;
+    color:#010b49;
+    font-weight: 600;
+
+}
+
+.complete-form{
+    width: 150px;
+    padding: 1.3%;
+    border-radius: 10px;
+    border:none;
+    background: #8f9eff81;
+}
