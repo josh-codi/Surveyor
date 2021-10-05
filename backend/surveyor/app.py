@@ -53,6 +53,10 @@ def create_app():
     survey.init_app(app)
     survey_submission.init_app(app)
 
+    @app.route('/hello-world')
+    def hello_world():
+        return 'HELLO WORLD', 200
+
     return app
 
 
